@@ -1,11 +1,7 @@
 # nZlauncher catalog — lives at ~/.config/nzlauncher/catalog.toml
 # nzlauncher reads this fresh on every launch; edit and it just works.
-
-[settings]
-interface = "tui"    # tui | gtk
-gtk_mode = "window"  # overlay (layer-shell, above everything) | window (managed by Hyprland rules)
-wallpaper_dir = "~/.config/nezha/theme/wallpapers"
-wallpaper_cmd = "wallpaper"   # neZha script: sets swaybg and remembers the pick
+# Settings live in config.toml next to it. Nightlight and keep awake are
+# built in now (nightlight 3500, keep awake 1h), so they have no entries.
 
 # ── Power ─────────────────────────────────────────────────────────────────────
 
@@ -52,22 +48,6 @@ group = "power"
 cmd = "launch-screensaver"
 
 # ── Toggles ───────────────────────────────────────────────────────────────────
-
-[[action]]
-id = "toggle-nightlight"
-name = "Toggle Nightlight"
-icon = "󰔎"
-group = "toggle"
-keywords = ["blue", "warm", "temperature"]
-cmd = "toggle-nightlight"
-
-[[action]]
-id = "toggle-idle"
-name = "Toggle Idle Lock"
-icon = "󱫖"
-group = "toggle"
-keywords = ["caffeine", "awake"]
-cmd = "toggle-idle"
 
 [[action]]
 id = "toggle-screensaver"

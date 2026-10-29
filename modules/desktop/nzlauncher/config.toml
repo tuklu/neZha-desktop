@@ -1,0 +1,10 @@
+# nZlauncher settings for neZha, linked to ~/.config/nzlauncher/config.toml.
+# Every setting with its default: nZlauncher's docs/configuration.md, or
+# move this link away once and nzlauncher writes its commented template.
+
+interface = "gtk"    # face `nzlauncher bar` opens: tui | gtk
+gtk_mode = "window"  # overlay (layer-shell, above everything) | window (Hyprland rules apply)
+
+[wallpaper]
+dir = "~/.config/nezha/theme/wallpapers"
+cmd = "wallpaper"    # neZha script: sets swaybg and remembers the pick

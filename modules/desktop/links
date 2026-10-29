@@ -12,6 +12,7 @@ fcitx5        : ~/.config/fcitx5
 
 # nZlauncher: our catalog, and the active theme's launcher look.
 nzlauncher/catalog.toml     : ~/.config/nzlauncher/catalog.toml
+nzlauncher/config.toml      : ~/.config/nzlauncher/config.toml
 ../../themes/current/nzlauncher : ~/.config/nzlauncher/theme
 bin           : ~/.local/share/nezha/bin
 
