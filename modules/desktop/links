@@ -10,6 +10,10 @@ wiremix       : ~/.config/wiremix
 environment.d : ~/.config/environment.d
 fcitx5        : ~/.config/fcitx5
 neZha         : ~/.config/neZha
+
+# nZlauncher: our catalog, and the active theme's launcher look.
+nzlauncher/catalog.toml     : ~/.config/nzlauncher/catalog.toml
+../../themes/current/nzlauncher : ~/.config/nzlauncher/theme
 bin           : ~/.local/share/neZha/bin
 
 # Per file: systemd writes its own .wants symlinks into that directory.
