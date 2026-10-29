@@ -5,7 +5,7 @@ After=graphical-session.target swayosd-server.service
 
 [Service]
 Type=simple
-ExecStart=%h/.local/share/neZha/bin/kbd-backlight-watch
+ExecStart=%h/.local/share/nezha/bin/kbd-backlight-watch
 Restart=on-failure
 RestartSec=2
 

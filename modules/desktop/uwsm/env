@@ -1,6 +1,6 @@
 # Changes require a restart to take effect.
 
-export NEZHA_PATH=$HOME/.local/share/neZha
+export NEZHA_PATH=$HOME/.local/share/nezha
 export GDK_SCALE=2
 
 _pp() { [[ ":$PATH:" != *":$1:"* ]] && export PATH="$1:$PATH"; }

@@ -1,5 +1,5 @@
 local state = require("state")
-local NEZHA = os.getenv("HOME") .. "/.local/share/neZha/bin/"
+local NEZHA = os.getenv("HOME") .. "/.local/share/nezha/bin/"
 
 hl.on("hyprland.start", function()
 	hl.exec_cmd(NEZHA .. "wallpaper")
@@ -15,7 +15,7 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd(
 		"systemctl --user set-environment PATH="
 			.. os.getenv("HOME")
-			.. "/.local/share/neZha/bin:"
+			.. "/.local/share/nezha/bin:"
 			.. os.getenv("HOME")
 			.. "/.local/bin:"
 			.. (os.getenv("PATH") or "/usr/local/bin:/usr/bin:/bin")

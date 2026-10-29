@@ -3,4 +3,4 @@ Description=neZha low battery warning
 
 [Service]
 Type=oneshot
-ExecStart=%h/.local/share/neZha/bin/battery-monitor
+ExecStart=%h/.local/share/nezha/bin/battery-monitor

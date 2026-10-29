@@ -9,12 +9,11 @@ imv           : ~/.config/imv
 wiremix       : ~/.config/wiremix
 environment.d : ~/.config/environment.d
 fcitx5        : ~/.config/fcitx5
-neZha         : ~/.config/neZha
 
 # nZlauncher: our catalog, and the active theme's launcher look.
 nzlauncher/catalog.toml     : ~/.config/nzlauncher/catalog.toml
 ../../themes/current/nzlauncher : ~/.config/nzlauncher/theme
-bin           : ~/.local/share/neZha/bin
+bin           : ~/.local/share/nezha/bin
 
 # Per file: systemd writes its own .wants symlinks into that directory.
 systemd-user/battery-monitor.service         : ~/.config/systemd/user/battery-monitor.service
@@ -23,10 +22,10 @@ systemd-user/swayosd-server.service          : ~/.config/systemd/user/swayosd-se
 systemd-user/nezha-kbd-backlight-osd.service : ~/.config/systemd/user/nezha-kbd-backlight-osd.service
 
 # Custom icons, resolved through the hicolor fallback of any icon theme.
-neZha/icons/nezha-touchpad-disabled-symbolic.svg : ~/.local/share/icons/hicolor/scalable/status/nezha-touchpad-disabled-symbolic.svg
-neZha/icons/nezha-kbd-backlight-off-symbolic.svg : ~/.local/share/icons/hicolor/scalable/status/nezha-kbd-backlight-off-symbolic.svg
-neZha/icons/nezha-kbd-backlight-low-symbolic.svg : ~/.local/share/icons/hicolor/scalable/status/nezha-kbd-backlight-low-symbolic.svg
-neZha/icons/nezha-kbd-backlight-high-symbolic.svg : ~/.local/share/icons/hicolor/scalable/status/nezha-kbd-backlight-high-symbolic.svg
+icons/nezha-touchpad-disabled-symbolic.svg : ~/.local/share/icons/hicolor/scalable/status/nezha-touchpad-disabled-symbolic.svg
+icons/nezha-kbd-backlight-off-symbolic.svg : ~/.local/share/icons/hicolor/scalable/status/nezha-kbd-backlight-off-symbolic.svg
+icons/nezha-kbd-backlight-low-symbolic.svg : ~/.local/share/icons/hicolor/scalable/status/nezha-kbd-backlight-low-symbolic.svg
+icons/nezha-kbd-backlight-high-symbolic.svg : ~/.local/share/icons/hicolor/scalable/status/nezha-kbd-backlight-high-symbolic.svg
 
 # Single files that live directly in ~/.config.
 browser-flags/chromium-flags.conf         : ~/.config/chromium-flags.conf

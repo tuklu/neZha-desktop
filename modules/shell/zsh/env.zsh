@@ -14,7 +14,7 @@ if [[ $OSTYPE == darwin* ]]; then
 fi
 
 # Prepended in reverse, so ~/.local/bin ends up first.
-for dir in ~/.local/share/neZha/bin ~/.local/bin; do
+for dir in ~/.local/share/nezha/bin ~/.local/bin; do
   [[ -d $dir ]] && path=($dir $path)
 done
 for dir in ~/go/bin ~/.cargo/bin; do

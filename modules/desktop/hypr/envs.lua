@@ -1,6 +1,6 @@
 -- PATH for Hyprland-dispatched commands
 local _home = os.getenv("HOME") or ""
-hl.env("PATH", _home .. "/.local/share/neZha/bin:" .. _home .. "/.local/bin:" .. (os.getenv("PATH") or "/usr/local/bin:/usr/bin:/bin"))
+hl.env("PATH", _home .. "/.local/share/nezha/bin:" .. _home .. "/.local/bin:" .. (os.getenv("PATH") or "/usr/local/bin:/usr/bin:/bin"))
 
 -- Cursor
 hl.env("XCURSOR_SIZE",    "24")
