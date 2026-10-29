@@ -19,7 +19,7 @@ window.nz {
   margin: 1px 4px;
 }
 .nz-list row:selected {
-  background: alpha(@accent_bg_color, 0.85);
+  background: alpha(#7aa2f7, 0.28);
 }
 .nz-name {
   font-size: 14px;
