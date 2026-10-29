@@ -1,0 +1,62 @@
+window#osd {
+  background-color: alpha(#262626, 0.9);
+  border: 2px solid #e65c5c;
+  border-radius: 10px;
+}
+
+window#osd #container {
+  margin: 16px 20px;
+}
+
+window#osd image {
+  color: #e6e6e6;
+  -gtk-icon-size: 48px;
+  margin-right: 16px;
+}
+
+window#osd label {
+  font-family: 'CaskaydiaMono Nerd Font';
+  font-size: 13px;
+  font-weight: 500;
+  color: #e6e6e6;
+}
+
+window#osd progressbar {
+  background: transparent;
+  border: none;
+  min-height: 10px;
+}
+
+window#osd trough {
+  min-height: inherit;
+  background: alpha(#e65c5c, 0.2);
+  border-radius: 2px;
+  border: none;
+}
+
+window#osd progress {
+  background: #e65c5c;
+  border-radius: 2px;
+  border: none;
+  min-height: inherit;
+}
+
+window#osd segmentedprogress {
+  min-height: 10px;
+}
+
+window#osd segment {
+  min-height: inherit;
+  min-width: 48px;
+  background: alpha(#e65c5c, 0.2);
+  border-radius: 2px;
+  margin-left: 8px;
+}
+
+window#osd segment:first-child {
+  margin-left: 0;
+}
+
+window#osd segment.active {
+  background: #e65c5c;
+}

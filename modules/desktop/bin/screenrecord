@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# screenrecord [--audio] [--mic] — slurp-pick a region/monitor and record;
+# run again to stop. Click inside a window snaps to it, full-monitor
+# selections use native monitor capture.
+
+[[ -f ~/.config/user-dirs.dirs ]] && source ~/.config/user-dirs.dirs
+out_dir="${SCREENRECORD_DIR:-${XDG_VIDEOS_DIR:-$HOME/Videos}}"
+mkdir -p "$out_dir"
+state="/tmp/nz-screenrecord"
+
+if pgrep -x gpu-screen-recorder >/dev/null; then
+    pkill -SIGINT -x gpu-screen-recorder
+    file="recording"
+    [[ -f $state ]] && file=$(<"$state") && rm -f "$state"
+    for _ in {1..25}; do pgrep -x gpu-screen-recorder >/dev/null || break; sleep 0.2; done
+    pkill -RTMIN+8 waybar || true
+    notify-send "Screen recording saved" "$file"
+    exit 0
+fi
+
+audio_devices=""
+for arg in "$@"; do
+    case "$arg" in
+    --audio) audio_devices+="${audio_devices:+|}default_output" ;;
+    --mic)   audio_devices+="${audio_devices:+|}default_input" ;;
+    esac
+done
+
+ws=$(hyprctl monitors -j | jq -r '.[] | select(.focused) | .activeWorkspace.id')
+rects=$({
+    hyprctl monitors -j | jq -r '.[] | "\(.x),\(.y) \((.width/.scale|floor))x\((.height/.scale|floor))"'
+    hyprctl clients -j | jq -r --argjson ws "$ws" \
+        '.[] | select(.workspace.id == $ws) | "\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"'
+})
+
+cleanup() { [[ -n ${picker:-} ]] && kill "$picker" 2>/dev/null || true; }
+trap cleanup EXIT
+hyprpicker -r -z >/dev/null 2>&1 & picker=$!
+sleep .1
+selection=$(echo "$rects" | slurp 2>/dev/null) || exit 0
+
+[[ $selection =~ ^(-?[0-9]+),(-?[0-9]+)[[:space:]]([0-9]+)x([0-9]+)$ ]] || exit 0
+sx=${BASH_REMATCH[1]} sy=${BASH_REMATCH[2]} sw=${BASH_REMATCH[3]} sh=${BASH_REMATCH[4]}
+
+# bare click snaps to the window/monitor rect under it
+if (( sw * sh < 20 )); then
+    while IFS= read -r rect; do
+        [[ $rect =~ ^(-?[0-9]+),(-?[0-9]+)[[:space:]]([0-9]+)x([0-9]+)$ ]] || continue
+        rx=${BASH_REMATCH[1]} ry=${BASH_REMATCH[2]} rw=${BASH_REMATCH[3]} rh=${BASH_REMATCH[4]}
+        if (( sx >= rx && sx < rx + rw && sy >= ry && sy < ry + rh )); then
+            sx=$rx sy=$ry sw=$rw sh=$rh
+            break
+        fi
+    done <<< "$rects"
+fi
+
+# exact monitor match → native monitor capture, no geometry handling
+monitor=$(hyprctl monitors -j | jq -r --argjson x "$sx" --argjson y "$sy" --argjson w "$sw" --argjson h "$sh" \
+    '.[] | select(.x == $x and .y == $y and (.width/.scale|floor) == $w and (.height/.scale|floor) == $h) | .name' | head -1)
+
+if [[ -n $monitor ]]; then
+    capture=(-w "$monitor")
+else
+    capture=(-w "${sw}x${sh}+${sx}+${sy}")
+fi
+
+audio_args=()
+[[ -n $audio_devices ]] && audio_args=(-a "$audio_devices" -ac aac)
+
+file="$out_dir/recording-$(date +'%Y-%m-%d_%H-%M-%S').mp4"
+echo "$file" > "$state"
+
+setsid gpu-screen-recorder "${capture[@]}" -k auto -f 60 -fm cfr \
+    -fallback-cpu-encoding yes -o "$file" "${audio_args[@]}" >/dev/null 2>&1 &
+
+sleep 0.5
+pkill -RTMIN+8 waybar || true
+notify-send -u low "Recording started" "Run screenrecord again to stop"

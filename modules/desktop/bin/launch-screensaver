@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+command -v tte &>/dev/null || exit 0
+pgrep -f 'class=org\.nezha\.screensaver' &>/dev/null && exit 0
+
+[[ -f "${HOME}/.config/hypr/state/screensaver-off" ]] && exit 0
+
+focused=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name' || true)
+
+for m in $(hyprctl monitors -j | jq -r '.[].name'); do
+    hyprctl dispatch focusmonitor "$m" >/dev/null 2>&1
+    ghostty --class=org.nezha.screensaver \
+            --gtk-single-instance=false \
+            --config-file="${HOME}/.config/ghostty/screensaver-config" \
+            --font-size=18 \
+            -e screensaver &
+done
+
+[[ -n ${focused:-} ]] && hyprctl dispatch focusmonitor "$focused" >/dev/null 2>&1 || true

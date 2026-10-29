@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+app_id="tui.$(basename "$1")"
+exec setsid uwsm-app -- ghostty --gtk-single-instance=false --class="$app_id" --title="$app_id" -e "$@"

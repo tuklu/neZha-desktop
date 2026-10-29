@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+STATE_FILE=/sys/bus/wmi/devices/46C93E13-EE9B-4262-8488-563BCA757FEF-0/fn_lock
+state=$(<"$STATE_FILE")
+
+if [[ $state == 1 ]]; then
+    osd --custom-icon input-keyboard-symbolic --custom-message 'Function keys locked'
+else
+    osd --custom-icon input-keyboard-symbolic --custom-message 'Function keys unlocked'
+fi

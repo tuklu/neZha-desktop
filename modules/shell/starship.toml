@@ -1,0 +1,71 @@
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$fill\
+$cmd_duration\
+$status\
+$line_break\
+$character"""
+
+add_newline = true
+command_timeout = 200
+
+[username]
+style_user = "cyan bold"
+style_root = "red bold"
+format = "[$user]($style) "
+disabled = false
+show_always = false
+
+[hostname]
+ssh_only = true
+format = "on [$hostname]($style) "
+style = "dimmed cyan"
+
+[fill]
+symbol = " "
+
+[cmd_duration]
+min_time = 500
+format = "took [$duration]($style) "
+style = "yellow"
+
+[status]
+disabled = false
+success_symbol = "[at $time]($style)"
+symbol = "[at $time]($style)"
+style = "red"
+success_style = "dimmed white"
+format = "$symbol"
+
+[time]
+disabled = false
+time_format = "%R"
+
+[character]
+error_symbol = "[✗](bold red)"
+success_symbol = "[❯](bold green)"
+
+[directory]
+truncation_length = 2
+truncation_symbol = ".../"
+repo_root_style = "bold cyan"
+repo_root_format = "[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) "
+
+[git_branch]
+format = "[$branch]($style) "
+style = "italic cyan"
+
+[git_status]
+format     = '[$all_status]($style)'
+style      = "cyan"
+ahead      = "up "
+diverged   = "div "
+behind     = "down "
+conflicted = "conflict "
+up_to_date = "ok "
+untracked  = "? "
+modified   = "* "

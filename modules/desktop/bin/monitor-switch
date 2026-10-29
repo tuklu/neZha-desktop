@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+is_external_connected() {
+    [[ "$(cat /sys/class/drm/card1-HDMI-A-1/status)" == "connected" ]]
+}
+
+is_lid_closed() {
+    grep -q "closed" /proc/acpi/button/lid/LID0/state
+}
+
+if is_external_connected; then
+    if is_lid_closed; then
+        hyprmoncfg apply docked_withBQ --confirm-timeout 0
+    else
+        hyprmoncfg apply dual_screen_withBQ --confirm-timeout 0
+    fi
+else
+    hyprmoncfg apply mobile --confirm-timeout 0
+fi

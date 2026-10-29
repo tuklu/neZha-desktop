@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+default=$(xdg-settings get default-web-browser)
+exec_bin=$(sed -n 's/^Exec=\([^ ]*\).*/\1/p' {~/.local,~/.nix-profile,/usr}/share/applications/"$default" 2>/dev/null | head -1)
+
+private_flag=""
+if [[ ${1:-} == "--private" ]]; then
+    if "$exec_bin" --help 2>/dev/null | grep -q MOZ_LOG; then
+        private_flag="--private-window"
+    elif [[ $exec_bin =~ edge ]]; then
+        private_flag="--inprivate"
+    else
+        private_flag="--incognito"
+    fi
+    shift
+fi
+
+systemd-run --user --quiet --collect --unit="browser-$(date +%s%N)" \
+    --property=StandardOutput=null --property=StandardError=null \
+    uwsm-app -- "$exec_bin" ${private_flag:+"$private_flag"} "$@"

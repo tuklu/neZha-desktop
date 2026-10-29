@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# wallpaper [file] — set wallpaper (persisted), or restore last one when no arg
+dir="${HOME}/.config/nezha/theme/wallpapers"
+current="${XDG_STATE_HOME:-$HOME/.local/state}/nezha/wallpaper"
+mkdir -p "$(dirname "$current")"
+
+if [[ $# -ge 1 ]]; then
+    ln -sfn "$(realpath "$1")" "$current"
+fi
+
+# A bare name resolves inside the active theme, so the pick survives a theme
+# switch whenever the new theme ships a file of the same name.
+if [[ -L $current && $(readlink "$current") != /* ]]; then
+    target="$dir/$(readlink "$current")"
+else
+    target="$current"
+fi
+
+if [[ ! -e $target ]]; then
+    first=$(find -L "$dir" -maxdepth 1 -type f \( -name '*.jpg' -o -name '*.png' -o -name '*.webp' \) | sort | head -n1)
+    [[ -z $first ]] && exit 0
+    ln -sfn "$(basename "$first")" "$current"
+    target="$first"
+fi
+
+pkill -x swaybg 2>/dev/null || true
+setsid uwsm-app -- swaybg -i "$target" -m fill >/dev/null 2>&1 &

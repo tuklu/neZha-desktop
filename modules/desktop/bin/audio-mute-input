@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle >/dev/null
+if pactl get-source-mute @DEFAULT_SOURCE@ 2>/dev/null | grep -q 'yes'; then
+    osd --custom-message 'Microphone muted'  --custom-icon 'microphone-sensitivity-muted-symbolic'
+else
+    osd --custom-message 'Microphone on'     --custom-icon 'audio-input-microphone-symbolic'
+fi

@@ -1,0 +1,5 @@
+neovim
+ripgrep
+fd
+tree-sitter-cli
+node

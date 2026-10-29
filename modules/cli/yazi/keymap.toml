@@ -1,0 +1,256 @@
+# neZha yazi keymap. Prepended on top of the 26.9 preset; prefixes are grouped
+# so which-key menus stay readable:
+#   C  convert      X  archive / extract   i  image tools   b  bookmarks
+#   c  copy (+ chmod)   u/U restore trash   =  diff   M  mount   T  max preview
+
+# ── Navigation ────────────────────────────────────────────────────────────────
+
+[[mgr.prepend_keymap]]
+on   = "l"
+run  = "plugin smart-enter"
+desc = "Enter directory or open file"
+
+[[mgr.prepend_keymap]]
+on   = "<Enter>"
+run  = "plugin smart-enter"
+desc = "Enter directory or open file"
+
+[[mgr.prepend_keymap]]
+on   = "F"
+run  = "plugin smart-filter"
+desc = "Smart filter (auto-enter single match)"
+
+[[mgr.prepend_keymap]]
+on   = "T"
+run  = "plugin toggle-pane max-preview"
+desc = "Maximize / restore preview"
+
+# ── Convert (C) ───────────────────────────────────────────────────────────────
+# Target format by key; nz-convert picks the tool from each file's MIME type.
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "p" ]
+run  = "shell -- nz-convert png %s"
+desc = "To PNG (image, svg, pdf pages, video frame)"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "j" ]
+run  = "shell -- nz-convert jpg %s"
+desc = "To JPG"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "w" ]
+run  = "shell -- nz-convert webp %s"
+desc = "To WebP"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "a" ]
+run  = "shell -- nz-convert avif %s"
+desc = "To AVIF"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "i" ]
+run  = "shell -- nz-convert ico %s"
+desc = "To ICO (multi-size icon)"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "m" ]
+run  = "shell -- nz-convert mp4 %s"
+desc = "To MP4 (h264/aac)"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "e" ]
+run  = "shell -- nz-convert webm %s"
+desc = "To WebM (vp9/opus)"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "g" ]
+run  = "shell -- nz-convert gif %s"
+desc = "To GIF"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "3" ]
+run  = "shell -- nz-convert mp3 %s"
+desc = "To MP3 (audio or extract from video)"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "o" ]
+run  = "shell -- nz-convert opus %s"
+desc = "To Opus"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "f" ]
+run  = "shell -- nz-convert flac %s"
+desc = "To FLAC"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "v" ]
+run  = "shell -- nz-convert wav %s"
+desc = "To WAV"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "d" ]
+run  = "shell -- nz-convert pdf %s"
+desc = "To PDF (office, markdown, html, image)"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "x" ]
+run  = "shell -- nz-convert docx %s"
+desc = "To DOCX"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "h" ]
+run  = "shell -- nz-convert html %s"
+desc = "To HTML"
+
+[[mgr.prepend_keymap]]
+on   = [ "C", "M" ]
+run  = "shell -- nz-convert md %s"
+desc = "To Markdown (docx, odt, epub, html)"
+
+# ── Archive (X) ───────────────────────────────────────────────────────────────
+
+[[mgr.prepend_keymap]]
+on   = [ "X", "x" ]
+run  = "shell -- ya pub extract --list %s"
+desc = "Extract here"
+
+[[mgr.prepend_keymap]]
+on   = [ "X", "a" ]
+run  = "plugin compress"
+desc = "Archive selection"
+
+[[mgr.prepend_keymap]]
+on   = [ "X", "p" ]
+run  = "plugin compress -p"
+desc = "Archive with password"
+
+[[mgr.prepend_keymap]]
+on   = [ "X", "h" ]
+run  = "plugin compress -ph"
+desc = "Archive with password + encrypted header"
+
+[[mgr.prepend_keymap]]
+on   = [ "X", "l" ]
+run  = "plugin compress -l"
+desc = "Archive with compression level"
+
+[[mgr.prepend_keymap]]
+on   = [ "X", "u" ]
+run  = "plugin compress -phl"
+desc = "Archive with password + header + level"
+
+# ── Image tools (i) ───────────────────────────────────────────────────────────
+
+[[mgr.prepend_keymap]]
+on   = [ "i", "i" ]
+run  = "plugin image-minify -- compress_current"
+desc = "Compress hovered image"
+
+[[mgr.prepend_keymap]]
+on   = [ "i", "d" ]
+run  = "plugin image-minify -- compress_directory"
+desc = "Compress all images in directory"
+
+[[mgr.prepend_keymap]]
+on   = [ "i", "5" ]
+run  = "plugin image-minify -- resize 5"
+desc = "Resize to 50%"
+
+[[mgr.prepend_keymap]]
+on   = [ "i", "7" ]
+run  = "plugin image-minify -- resize 7"
+desc = "Resize to 70%"
+
+[[mgr.prepend_keymap]]
+on   = [ "i", "9" ]
+run  = "plugin image-minify -- resize 9"
+desc = "Resize to 90%"
+
+# ── Bookmarks (b) ─────────────────────────────────────────────────────────────
+
+[[mgr.prepend_keymap]]
+on   = [ "b", "b" ]
+run  = "plugin yamb -- jump_by_key"
+desc = "Jump to bookmark"
+
+[[mgr.prepend_keymap]]
+on   = [ "b", "f" ]
+run  = "plugin yamb -- jump_by_fzf"
+desc = "Jump to bookmark (fzf)"
+
+[[mgr.prepend_keymap]]
+on   = [ "b", "a" ]
+run  = "plugin yamb -- save"
+desc = "Bookmark current directory"
+
+[[mgr.prepend_keymap]]
+on   = [ "b", "d" ]
+run  = "plugin yamb -- delete_by_key"
+desc = "Delete bookmark"
+
+[[mgr.prepend_keymap]]
+on   = [ "b", "D" ]
+run  = "plugin yamb -- delete_by_fzf"
+desc = "Delete bookmark (fzf)"
+
+[[mgr.prepend_keymap]]
+on   = [ "b", "r" ]
+run  = "plugin yamb -- rename_by_key"
+desc = "Rename bookmark"
+
+# ── Trash ─────────────────────────────────────────────────────────────────────
+
+[[mgr.prepend_keymap]]
+on   = "u"
+run  = "plugin restore"
+desc = "Restore last trashed files"
+
+[[mgr.prepend_keymap]]
+on   = "U"
+run  = "plugin restore -- --interactive"
+desc = "Restore trashed files (pick)"
+
+# ── Copy / clipboard (c, extends preset c c / c d / c f / c n) ────────────────
+
+[[mgr.prepend_keymap]]
+on   = [ "c", "y" ]
+run  = "shell -- nz-copy-files %s"
+desc = "Copy files to clipboard (paste into apps)"
+
+[[mgr.prepend_keymap]]
+on   = [ "c", "Y" ]
+run  = "shell -- wl-copy --type \"$(file -b --mime-type %h)\" < %h"
+desc = "Copy hovered file contents (text or image)"
+
+[[mgr.prepend_keymap]]
+on   = [ "c", "m" ]
+run  = "plugin chmod"
+desc = "Chmod selection"
+
+# ── Tools ─────────────────────────────────────────────────────────────────────
+
+[[mgr.prepend_keymap]]
+on   = "="
+run  = "plugin diff"
+desc = "Diff selected with hovered"
+
+[[mgr.prepend_keymap]]
+on   = "M"
+run  = "plugin mount"
+desc = "Mount / unmount drives"
+
+[[mgr.prepend_keymap]]
+on   = "<C-n>"
+run  = "shell -- ripdrag --and-exit --no-click %s"
+desc = "Drag selection into another app"
+
+[[mgr.prepend_keymap]]
+on   = "<C-g>"
+run  = "shell --block -- lazygit"
+desc = "lazygit in current directory"
+
+[[mgr.prepend_keymap]]
+on   = "!"
+run  = "shell --block -- $SHELL"
+desc = "Shell in current directory"

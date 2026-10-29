@@ -1,0 +1,204 @@
+#!/usr/bin/env bash
+# Convert files to a target format, choosing the tool from each source's MIME type.
+# Output lands next to the source and never overwrites: name.ext, name-1.ext, ...
+#
+#   nz-convert <target> <file>...
+#
+# Targets
+#   image : png jpg webp avif ico          (magick; pdf -> one image per page via pdftoppm)
+#   video : mp4 webm gif                   (ffmpeg; gif uses a generated palette)
+#   audio : mp3 opus flac wav m4a          (ffmpeg, video sources drop the picture)
+#   docs  : pdf docx odt html md           (soffice for office files, pandoc for text,
+#                                           markdown/html -> pdf printed by headless chromium)
+set -euo pipefail
+
+usage() { sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
+[[ $# -ge 2 ]] || usage
+
+target=${1,,}
+shift
+
+notify() { notify-send -a "nz-convert" "$@" 2>/dev/null || true; }
+
+unique_path() {
+    local dir=$1 stem=$2 ext=$3 candidate n=1
+    candidate="$dir/$stem.$ext"
+    while [[ -e $candidate ]]; do
+        candidate="$dir/$stem-$n.$ext"
+        n=$((n + 1))
+    done
+    printf '%s' "$candidate"
+}
+
+ffmpeg_quiet() { ffmpeg -hide_banner -loglevel error -nostdin "$@"; }
+
+to_image() {
+    local src=$1 mime=$2 out=$3 dir=$4 stem=$5
+    case $mime in
+        application/pdf)
+            local format=png
+            [[ $target == jpg ]] && format=jpeg
+            [[ $target == png || $target == jpg ]] || return 1
+            local prefix="$dir/$stem-page" n=1
+            while compgen -G "$prefix-*.$target" >/dev/null; do
+                prefix="$dir/$stem-page$n"
+                n=$((n + 1))
+            done
+            pdftoppm -r 150 "-$format" "$src" "$prefix"
+            ;;
+        image/svg+xml)
+            if [[ $target == png ]]; then
+                resvg --zoom 2 "$src" "$out"
+            else
+                magick -density 192 -background none "$src" "$out"
+            fi
+            ;;
+        image/* | video/*)
+            local input=$src
+            # Video sources: grab one frame from 10% in.
+            if [[ $mime == video/* ]]; then
+                local frame
+                frame=$(mktemp --suffix=.png)
+                local duration
+                duration=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$src" | cut -d. -f1)
+                [[ $duration =~ ^[0-9]+$ ]] || duration=0
+                ffmpeg_quiet -ss "$((duration / 10))" -i "$src" -frames:v 1 -y "$frame"
+                input=$frame
+            fi
+            local status=0
+            if [[ $target == ico ]]; then
+                magick "$input" -background none -resize 256x256 \
+                    -define icon:auto-resize=256,128,64,48,32,16 "$out" || status=$?
+            else
+                magick "$input" -quality 90 "$out" || status=$?
+            fi
+            [[ $input == "$src" ]] || rm -f "$input"
+            return "$status"
+            ;;
+        *) return 1 ;;
+    esac
+}
+
+to_video() {
+    local src=$1 mime=$2 out=$3
+    [[ $mime == video/* || $mime == image/gif ]] || return 1
+    case $target in
+        mp4)  ffmpeg_quiet -i "$src" -c:v libx264 -crf 22 -preset medium -pix_fmt yuv420p \
+                  -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:a aac -b:a 160k -movflags +faststart "$out" ;;
+        webm) ffmpeg_quiet -i "$src" -c:v libvpx-vp9 -crf 32 -b:v 0 -c:a libopus -b:a 128k "$out" ;;
+        gif)  ffmpeg_quiet -i "$src" -filter_complex \
+                  "fps=15,scale='min(720,iw)':-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse" "$out" ;;
+    esac
+}
+
+to_audio() {
+    local src=$1 mime=$2 out=$3
+    [[ $mime == audio/* || $mime == video/* ]] || return 1
+    case $target in
+        mp3)  ffmpeg_quiet -i "$src" -vn -c:a libmp3lame -q:a 2 "$out" ;;
+        opus) ffmpeg_quiet -i "$src" -vn -c:a libopus -b:a 128k "$out" ;;
+        flac) ffmpeg_quiet -i "$src" -vn -c:a flac "$out" ;;
+        wav)  ffmpeg_quiet -i "$src" -vn -c:a pcm_s16le "$out" ;;
+        m4a)  ffmpeg_quiet -i "$src" -vn -c:a aac -b:a 192k "$out" ;;
+    esac
+}
+
+is_office() {
+    [[ $1 == application/vnd.openxmlformats* || $1 == application/vnd.oasis.opendocument* ||
+       $1 == application/vnd.ms-* || $1 == application/msword || $1 == application/rtf ||
+       $1 == text/rtf ]]
+}
+
+is_text_doc() {
+    [[ $1 == text/markdown || $1 == text/x-markdown || $1 == text/html || $1 == text/plain ||
+       $1 == text/x-rst || $1 == application/x-ipynb+json ]]
+}
+
+pandoc_from() {
+    case $1 in
+        *.md | *.markdown) echo gfm ;;
+        *.html | *.htm) echo html ;;
+        *.rst) echo rst ;;
+        *.ipynb) echo ipynb ;;
+        *) echo markdown ;;
+    esac
+}
+
+to_doc() {
+    local src=$1 mime=$2 out=$3 dir=$4
+    # soffice cannot write markdown; pandoc reads docx/odt/epub natively.
+    if [[ $target == md && $src =~ \.(docx|odt|epub)$ ]]; then
+        pandoc -f "${BASH_REMATCH[1]}" -t gfm --extract-media="$dir/${src##*/}-media" -o "$out" "$src"
+    elif is_office "$mime"; then
+        [[ $target == pdf || $target == docx || $target == odt || $target == html ]] || return 1
+        local tmpdir
+        tmpdir=$(mktemp -d)
+        soffice --headless --convert-to "$target" --outdir "$tmpdir" "$src" >/dev/null 2>&1 || true
+        local produced=("$tmpdir"/*)
+        if [[ -f ${produced[0]} ]]; then
+            mv "${produced[0]}" "$out"
+            rm -rf "$tmpdir"
+        else
+            rm -rf "$tmpdir"
+            return 1
+        fi
+    elif is_text_doc "$mime"; then
+        local from
+        from=$(pandoc_from "$src")
+        if [[ $target == pdf ]]; then
+            local html
+            html=$(mktemp --suffix=.html)
+            pandoc -f "$from" -s --embed-resources --metadata title="$(basename "${src%.*}")" \
+                --resource-path="$dir" -o "$html" "$src"
+            chromium --headless=new --disable-gpu --no-pdf-header-footer \
+                --print-to-pdf="$out" "file://$html" >/dev/null 2>&1 || true
+            rm -f "$html"
+            [[ -s $out ]]
+        else
+            local to=$target
+            [[ $to == md ]] && to=gfm
+            pandoc -f "$from" -s --resource-path="$dir" -t "$to" -o "$out" "$src"
+        fi
+    elif [[ $mime == image/* && $target == pdf ]]; then
+        magick "$src" "$out"
+    else
+        return 1
+    fi
+}
+
+converted=0
+failed=()
+
+for src in "$@"; do
+    [[ -f $src ]] || { failed+=("$(basename "$src") (not a file)"); continue; }
+    mime=$(file -b --mime-type "$src")
+    dir=$(dirname "$src")
+    name=$(basename "$src")
+    stem=${name%.*}
+    out=$(unique_path "$dir" "$stem" "$target")
+
+    case $target in
+        png | jpg | webp | avif | ico) handler=to_image ;;
+        mp4 | webm | gif)              handler=to_video ;;
+        mp3 | opus | flac | wav | m4a) handler=to_audio ;;
+        pdf | docx | odt | html | md)  handler=to_doc ;;
+        *) echo "unknown target: $target" >&2; usage ;;
+    esac
+
+    # An image source asking for gif goes through magick, not ffmpeg.
+    [[ $target == gif && $mime == image/* && $mime != image/gif ]] && handler=to_image
+
+    if $handler "$src" "$mime" "$out" "$dir" "$stem"; then
+        converted=$((converted + 1))
+    else
+        failed+=("$name ($mime -> $target)")
+        rm -f "$out"
+    fi
+done
+
+if ((${#failed[@]})); then
+    printf 'failed: %s\n' "${failed[@]}" >&2
+    notify -u critical "Convert to ${target^^}: ${#failed[@]} failed" "$(printf '%s\n' "${failed[@]}")"
+fi
+((converted)) && notify "Converted $converted file(s) to ${target^^}"
+((${#failed[@]} == 0))

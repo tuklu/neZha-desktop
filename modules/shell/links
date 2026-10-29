@@ -1,0 +1,4 @@
+zsh           : ~/.config/zsh
+zshrc         : ~/.zshrc
+zshenv        : ~/.zshenv
+starship.toml : ~/.config/starship.toml

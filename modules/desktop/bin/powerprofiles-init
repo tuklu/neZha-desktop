@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+has_battery() { ls /sys/class/power_supply/BAT* &>/dev/null; }
+on_ac() {
+    for f in /sys/class/power_supply/AC*/online /sys/class/power_supply/ACAD*/online; do
+        [[ -f $f ]] && [[ $(cat "$f") == "1" ]] && return 0
+    done
+    return 1
+}
+has_battery && ! on_ac && powerprofilesctl set power-saver || powerprofilesctl set balanced

@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+step="${1:-+5%}"
+
+# ── Focused monitor detection ──────────────────────────────────────────────────
+focused=$(hyprctl monitors -j 2>/dev/null | jq -r '.[] | select(.focused == true) | .name' 2>/dev/null || echo "eDP-1")
+
+# ── Internal display (eDP) uses backlight ─────────────────────────────────────
+if [[ $focused == eDP* ]]; then
+    if [[ $step == "off" ]]; then
+        hyprctl dispatch dpms off >/dev/null 2>&1; exit 0
+    elif [[ $step == "on" ]]; then
+        hyprctl dispatch dpms on >/dev/null 2>&1; exit 0
+    fi
+
+    exec 9>"${XDG_RUNTIME_DIR:-/tmp}/brightness.lock"
+    flock -n 9 || exit 0
+
+    device="$(ls -1 /sys/class/backlight 2>/dev/null | head -n1)"
+    for candidate in amdgpu_bl* intel_backlight acpi_video*; do
+        [[ -e /sys/class/backlight/$candidate ]] && device="$candidate" && break
+    done
+
+    current=$(brightnessctl -d "$device" -m | cut -d',' -f4 | tr -d '%')
+
+    if [[ $step == "+5%" ]]; then
+        (( current < 5 )) && target=$(( current + 1 )) || target=$(( current + 5 ))
+        (( target > 100 )) && target=100; step="$target%"
+    elif [[ $step == "5%-" ]]; then
+        (( current <= 5 )) && target=$(( current - 1 )) || target=$(( current - 5 ))
+        (( target < 1 )) && target=1; step="$target%"
+    fi
+
+    brightnessctl -d "$device" set "$step" >/dev/null
+
+    percent=$(brightnessctl -d "$device" -m | cut -d',' -f4 | tr -d '%')
+    progress=$(awk -v p="$percent" 'BEGIN{printf "%.2f", p/100}')
+    [[ $progress == "0.00" ]] && progress="0.01"
+    osd --custom-icon display-brightness-symbolic \
+        --custom-progress "$progress" \
+        --custom-progress-text "$(printf '%3d%%' "$percent")"
+    exit 0
+fi
+
+# ── External display uses DDC/CI ──────────────────────────────────────────────
+if [[ $step == "off" || $step == "on" ]]; then
+    hyprctl dispatch dpms "$([[ $step == off ]] && echo off || echo on)" >/dev/null 2>&1
+    exit 0
+fi
+
+RT="${XDG_RUNTIME_DIR:-/tmp}"
+bus_cache="$RT/brightness-bus-${focused//\//_}"
+val_cache="$RT/brightness-val-${focused//\//_}"
+
+# Bus: use cache; re-detect only if cache missing (cleared on monitor disconnect)
+if [[ ! -f $bus_cache ]]; then
+    bus=$(ddcutil detect --brief 2>/dev/null \
+        | awk "/I2C bus:/{sub(/.*i2c-/,\"\"); sub(/[^0-9].*/,\"\"); last=\$0} \
+               /DRM connector:.*${focused}/{print last; exit}")
+    [[ -z $bus ]] && exit 0
+    echo "$bus" > "$bus_cache"
+else
+    bus=$(< "$bus_cache")
+fi
+
+# Current value: use cache; read from device only if cache missing
+if [[ ! -f $val_cache ]]; then
+    current=$(ddcutil --bus "$bus" --sleep-multiplier 0.1 getvcp 10 2>/dev/null \
+        | grep -oP 'current value =\s*\K[0-9]+' || echo 50)
+else
+    current=$(< "$val_cache")
+fi
+
+# Compute absolute target from cached current value
+case "$step" in
+    +5%)  target=$(( current + 5  )); (( target > 100 )) && target=100 ;;
+    5%-)  target=$(( current - 5  )); (( target < 1   )) && target=1   ;;
+    +1%)  target=$(( current + 1  )); (( target > 100 )) && target=100 ;;
+    1%-)  target=$(( current - 1  )); (( target < 1   )) && target=1   ;;
+    *)
+        target="${step//%/}"
+        (( target < 1   )) && target=1
+        (( target > 100 )) && target=100
+        ;;
+esac
+
+echo "$target" > "$val_cache"
+
+progress=$(awk -v p="$target" 'BEGIN{printf "%.2f", p/100}')
+[[ $progress == "0.00" ]] && progress="0.01"
+osd --custom-icon display-brightness-symbolic \
+    --custom-progress "$progress" \
+    --custom-progress-text "$(printf '%3d%%' "$target")"
+
+# Debounced DDC write: one worker at a time; after each I2C round-trip it
+# re-reads val_cache — if value changed (more keypresses arrived), applies again.
+# This collapses rapid keypresses into the minimum number of I2C transactions.
+(
+    exec 9>"$RT/brightness-ddc-${focused//\//_}.lock"
+    flock -n 9 || exit 0  # another worker is running and will pick up val_cache
+    while true; do
+        t=$(< "$val_cache")
+        ddcutil --bus "$bus" --sleep-multiplier 0.1 setvcp 10 "$t" >/dev/null 2>&1
+        sleep 0.1
+        [[ $(< "$val_cache") == "$t" ]] && break
+    done
+) &

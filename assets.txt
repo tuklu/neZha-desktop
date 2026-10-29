@@ -1,0 +1,21 @@
+# Images are deliberately not in git history. Restore these paths manually.
+# The themes/n1/hyprlock sizes are post-downscale: hyprlock renders the
+# backgrounds at 3200 wide and fg1 at 2400, so the 5248px originals only cost
+# decode time before the lock can paint. Originals kept on disk as *.orig.
+
+## themes/n1/hyprlock
+backgrounds/b2.jpg  1801169 bytes
+backgrounds/b3.png  10020529 bytes
+foreground/fg1.png  729026 bytes
+
+## themes/n1/wallpapers
+b2.jpg  12936026 bytes
+b3.png  25722272 bytes
+fg1.png  2775152 bytes
+
+## themes/n1/backgrounds
+a9.jpg  875074 bytes
+b2.jpg  12936026 bytes
+b4.jpg  2013494 bytes
+b6.jpg  16200671 bytes
+b8.jpg  1417203 bytes

@@ -1,0 +1,3 @@
+# profile : modules, in install order
+dev     : theme shell git nvim tmux terminal cli
+desktop : theme shell git nvim tmux terminal cli zed desktop

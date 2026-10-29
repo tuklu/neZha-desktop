@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# transcode [--path path] [input] [format] [resolution]
+# Pictures: jpg/png at high/medium/low - Videos: mp4/gif at 4k/1080p/720p
+# Missing args are picked interactively via nz pick.
+
+menu_select() {
+    local prompt="$1"
+    shift
+    printf '%s\n' "$@" | nz pick -p "$prompt"
+}
+
+pick_file() {
+    local search_path="${1:-}"
+    local -a dirs
+    if [[ -n $search_path ]]; then dirs=("$search_path"); else dirs=("$HOME/Pictures" "$HOME/Videos" "$HOME/Downloads"); fi
+    find "${dirs[@]}" -maxdepth 3 -type f \
+        \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \
+           -o -iname '*.heic' -o -iname '*.avif' -o -iname '*.mp4' -o -iname '*.mov' -o -iname '*.m4v' \
+           -o -iname '*.mkv' -o -iname '*.webm' -o -iname '*.avi' \) -printf '%T@\t%p\n' 2>/dev/null |
+        sort -rn | cut -f2 | head -40 |
+        nz pick -p "Transcode"
+}
+
+media_type() {
+    case "$(file -b --mime-type "$1")" in
+    image/*) echo picture ;;
+    video/*) echo video ;;
+    *) echo "Unsupported file type" >&2; return 1 ;;
+    esac
+}
+
+transcode_picture() {
+    local input="$1" format="$2" resolution="$3" output="$4" resize
+    case "$resolution" in
+    high) resize='3160x>' ;; medium) resize='2160x>' ;; low) resize='1080x>' ;;
+    *) echo "Invalid picture resolution: $resolution" >&2; return 1 ;;
+    esac
+    case "$format" in
+    jpg) magick "$input" -resize "$resize" -quality 85 -strip "$output" ;;
+    png) magick "$input" -resize "$resize" -strip -define png:compression-filter=5 \
+        -define png:compression-level=9 -define png:compression-strategy=1 \
+        -define png:exclude-chunk=all "$output" ;;
+    *) echo "Invalid picture format: $format" >&2; return 1 ;;
+    esac
+}
+
+transcode_video() {
+    local input="$1" format="$2" resolution="$3" output="$4" scale
+    case "$resolution" in
+    4k) scale='scale=-2:2160' ;; 1080p) scale='scale=-2:1080' ;; 720p) scale='scale=-2:720' ;;
+    *) echo "Invalid video resolution: $resolution" >&2; return 1 ;;
+    esac
+    case "$format" in
+    mp4)
+        if [[ $resolution == "4k" ]]; then
+            ffmpeg -i "$input" -vf "$scale" -c:v libx265 -preset slow -crf 24 -c:a aac -b:a 192k "$output"
+        else
+            ffmpeg -i "$input" -vf "$scale" -c:v libx264 -preset fast -crf 23 -c:a copy "$output"
+        fi ;;
+    gif) ffmpeg -i "$input" -vf "fps=10,$scale:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" "$output" ;;
+    *) echo "Invalid video format: $format" >&2; return 1 ;;
+    esac
+}
+
+search_path=""
+positional=()
+while (($# > 0)); do
+    case "$1" in
+    --path) shift; search_path="$1" ;;
+    *) positional+=("$1") ;;
+    esac
+    shift
+done
+
+input="${positional[0]:-}"
+format="${positional[1]:-}"
+resolution="${positional[2]:-}"
+
+if [[ -z $input ]]; then
+    input=$(pick_file "$search_path") || exit 0
+    [[ -z $input ]] && exit 0
+fi
+
+type=$(media_type "$input")
+
+if [[ -z $format ]]; then
+    if [[ $type == picture ]]; then format=$(menu_select "Format" jpg png); else format=$(menu_select "Format" mp4 gif); fi
+    [[ -z $format ]] && exit 0
+fi
+if [[ -z $resolution ]]; then
+    if [[ $type == picture ]]; then resolution=$(menu_select "Resolution" high medium low); else resolution=$(menu_select "Resolution" 4k 1080p 720p); fi
+    [[ -z $resolution ]] && exit 0
+fi
+
+dir=$(dirname -- "$input")
+stem=$(basename -- "$input"); stem="${stem%.*}"
+output="$dir/$stem-$resolution.$format"
+
+notify-send -u low "Transcoding ${type}…" "$(basename -- "$input") to $format ($resolution)"
+
+if [[ $type == picture ]]; then
+    transcode_picture "$input" "$format" "$resolution" "$output"
+else
+    transcode_video "$input" "$format" "$resolution" "$output" >/dev/null 2>&1
+fi
+
+printf '%s\n' "file://$(realpath -- "$output")" | wl-copy --type text/uri-list
+notify-send "Transcoded to $resolution $format" "Saved and copied to clipboard."

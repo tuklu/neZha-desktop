@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+sinks=$(pactl -f json list sinks | jq '[.[] | select((.ports | length == 0) or ([.ports[]? | .availability != "not available"] | any))]')
+sinks_count=$(echo "$sinks" | jq '. | length')
+
+if (( sinks_count == 0 )); then
+    osd --custom-message "No audio devices found"; exit 1
+fi
+
+current_sink_name=$(pactl get-default-sink)
+current_sink_index=$(echo "$sinks" | jq -r --arg name "$current_sink_name" 'map(.name) | index($name)')
+
+if [[ $current_sink_index != "null" ]]; then
+    next_idx=$(( (current_sink_index + 1) % sinks_count ))
+else
+    next_idx=0
+fi
+
+next=$(echo "$sinks" | jq -r ".[$next_idx]")
+next_name=$(echo "$next" | jq -r '.name')
+next_desc=$(echo "$next" | jq -r '.description')
+
+if [[ $next_desc == "(null)" ]] || [[ $next_desc == "null" ]] || [[ -z $next_desc ]]; then
+    device_id=$(echo "$next" | jq -r '.properties."device.id"')
+    if [[ $device_id != "null" ]] && [[ -n $device_id ]]; then
+        next_desc=$(wpctl status | grep -E "^\s*│?\s+${device_id}\." | sed -E 's/^.*[0-9]+\.\s+//' | sed -E 's/\s+\[.*$//')
+    fi
+    if [[ -z $next_desc ]]; then
+        sink_id=$(echo "$next" | jq -r '.properties."object.id"')
+        next_desc=$(wpctl status | grep -E "\s+\*?\s+${sink_id}\." | sed -E 's/^.*[0-9]+\.\s+//' | sed -E 's/\s+\[.*$//')
+    fi
+fi
+
+next_vol=$(echo "$next" | jq -r '.volume | to_entries[0].value.value_percent | sub("%"; "")')
+next_muted=$(echo "$next" | jq -r '.mute')
+
+if [[ $next_muted == "true" ]] || (( next_vol == 0 )); then
+    icon_state="muted"
+elif (( next_vol <= 33 )); then icon_state="low"
+elif (( next_vol <= 66 )); then icon_state="medium"
+else icon_state="high"
+fi
+
+if [[ $next_name != "$current_sink_name" ]]; then
+    next_wpid=$(echo "$next" | jq -r '.properties."object.id"')
+    wpctl set-default "$next_wpid"
+fi
+
+osd --custom-message "$next_desc" --custom-icon "sink-volume-${icon_state}-symbolic"

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Waybar voxtype module: follow dictation state; clean up child on reload.
+trap 'kill 0' EXIT
+
+if command -v voxtype >/dev/null; then
+    voxtype status --follow --extended --format json | while read -r line; do
+        echo "$line" | jq -c '. + {alt: .class}'
+    done
+else
+    echo '{"alt": "", "tooltip": ""}'
+fi

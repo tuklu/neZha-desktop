@@ -1,0 +1,8 @@
+neovim
+ripgrep
+fd
+tree-sitter-cli
+git
+unzip
+nodejs
+npm

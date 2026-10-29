@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+state_file="${HOME}/.config/hypr/state/screensaver-off"
+mkdir -p "$(dirname "$state_file")"
+
+if [[ -f $state_file ]]; then
+    rm "$state_file"
+    notify-send -u low "Screensaver enabled"
+else
+    touch "$state_file"
+    notify-send -u low "Screensaver disabled"
+fi

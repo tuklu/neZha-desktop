@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+browser=$(xdg-settings get default-web-browser)
+case $browser in
+google-chrome* | brave* | microsoft-edge* | opera* | vivaldi* | helium*) ;;
+*) browser="chromium.desktop" ;;
+esac
+# Only sed over files that exist: a missing path makes sed exit 2, which under
+# `set -o pipefail` aborts the script before the browser ever launches.
+exec_bin=""
+for desktop in ~/.local/share/applications/"$browser" ~/.nix-profile/share/applications/"$browser" /usr/share/applications/"$browser"; do
+	[ -f "$desktop" ] || continue
+	exec_bin=$(sed -n 's/^Exec=\([^ ]*\).*/\1/p' "$desktop" | head -1)
+	[ -n "$exec_bin" ] && break
+done
+# Pin the running session's profile, else a bare --app is absorbed by the
+# existing browser ("Opening in existing browser session") and no window opens.
+exec setsid uwsm-app -- "$exec_bin" --profile-directory=Default --app="$1" "${@:2}"

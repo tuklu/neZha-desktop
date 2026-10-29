@@ -1,0 +1,12 @@
+starship
+zoxide
+fzf
+eza
+bat
+fd
+ripgrep
+zsh-autosuggestions
+zsh-syntax-highlighting
+zsh-history-substring-search
+fzf-tab
+uv

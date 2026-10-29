@@ -1,0 +1,9 @@
+[Unit]
+Description=neZha battery monitor timer
+
+[Timer]
+OnActiveSec=30
+OnUnitActiveSec=30
+
+[Install]
+WantedBy=timers.target

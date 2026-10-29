@@ -1,0 +1,15 @@
+# Changes require a restart to take effect.
+
+export NEZHA_PATH=$HOME/.local/share/neZha
+export GDK_SCALE=2
+
+_pp() { [[ ":$PATH:" != *":$1:"* ]] && export PATH="$1:$PATH"; }
+_pp "$HOME/.local/bin"
+_pp "$NEZHA_PATH/bin"
+unset -f _pp
+
+# Set default terminal and editor
+source ~/.config/uwsm/default
+
+# Activate mise if present on the system
+command -v mise >/dev/null && eval "$(mise activate bash --shims)"

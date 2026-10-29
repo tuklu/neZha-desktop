@@ -1,0 +1,95 @@
+# neZha palette for eza. Linked from ~/.config/eza/theme.yml.
+colourful: true
+
+filekinds:
+  normal: {foreground: "#e6e6e6"}
+  directory: {foreground: "#6699ff", is_bold: true}
+  symlink: {foreground: "#66cccc"}
+  pipe: {foreground: "#606060"}
+  block_device: {foreground: "#ffcc66"}
+  char_device: {foreground: "#ffcc66"}
+  socket: {foreground: "#cc66cc"}
+  special: {foreground: "#cc66cc"}
+  executable: {foreground: "#66cc66", is_bold: true}
+  mount_point: {foreground: "#6699ff", is_underline: true}
+
+perms:
+  user_read: {foreground: "#ffcc66"}
+  user_write: {foreground: "#e65c5c"}
+  user_execute_file: {foreground: "#66cc66"}
+  user_execute_other: {foreground: "#66cc66"}
+  group_read: {foreground: "#ffcc66"}
+  group_write: {foreground: "#e65c5c"}
+  group_execute: {foreground: "#66cc66"}
+  other_read: {foreground: "#ffcc66"}
+  other_write: {foreground: "#e65c5c"}
+  other_execute: {foreground: "#66cc66"}
+  special_user_file: {foreground: "#cc66cc"}
+  special_other: {foreground: "#cc66cc"}
+  attribute: {foreground: "#606060"}
+
+size:
+  major: {foreground: "#66cccc"}
+  minor: {foreground: "#66cccc"}
+  number_byte: {foreground: "#e6e6e6"}
+  number_kilo: {foreground: "#e6e6e6"}
+  number_mega: {foreground: "#66cccc"}
+  number_giga: {foreground: "#ffcc66"}
+  number_huge: {foreground: "#e65c5c"}
+  unit_byte: {foreground: "#606060"}
+  unit_kilo: {foreground: "#606060"}
+  unit_mega: {foreground: "#606060"}
+  unit_giga: {foreground: "#606060"}
+  unit_huge: {foreground: "#606060"}
+
+users:
+  user_you: {foreground: "#ffcc66"}
+  user_root: {foreground: "#e65c5c"}
+  user_other: {foreground: "#cc66cc"}
+  group_yours: {foreground: "#ffcc66"}
+  group_other: {foreground: "#606060"}
+  group_root: {foreground: "#e65c5c"}
+
+links:
+  normal: {foreground: "#66cccc"}
+  multi_link_file: {foreground: "#ffcc66"}
+
+git:
+  new: {foreground: "#66cc66"}
+  modified: {foreground: "#ffcc66"}
+  deleted: {foreground: "#e65c5c"}
+  renamed: {foreground: "#66cccc"}
+  typechange: {foreground: "#cc66cc"}
+  ignored: {foreground: "#606060"}
+  conflicted: {foreground: "#e65c5c", is_bold: true}
+
+git_repo:
+  branch_main: {foreground: "#66cc66"}
+  branch_other: {foreground: "#cc66cc"}
+  git_clean: {foreground: "#66cc66"}
+  git_dirty: {foreground: "#e65c5c"}
+
+file_type:
+  image: {foreground: "#cc66cc"}
+  video: {foreground: "#cc66cc"}
+  music: {foreground: "#66cccc"}
+  lossless: {foreground: "#66cccc"}
+  crypto: {foreground: "#e65c5c"}
+  document: {foreground: "#e6e6e6"}
+  compressed: {foreground: "#ffcc66"}
+  temp: {foreground: "#606060"}
+  compiled: {foreground: "#606060"}
+  build: {foreground: "#66cc66", is_underline: true}
+  source: {foreground: "#e6e6e6"}
+
+punctuation: {foreground: "#606060"}
+date: {foreground: "#6699ff"}
+inode: {foreground: "#606060"}
+blocks: {foreground: "#606060"}
+header: {foreground: "#e6e6e6", is_underline: true}
+octal: {foreground: "#cc66cc"}
+flags: {foreground: "#606060"}
+symlink_path: {foreground: "#66cccc"}
+control_char: {foreground: "#e65c5c"}
+broken_symlink: {foreground: "#e65c5c"}
+broken_path_overlay: {foreground: "#606060"}

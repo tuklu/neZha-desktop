@@ -1,0 +1,3 @@
+git
+git-delta
+git-lfs

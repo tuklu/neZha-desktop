@@ -1,0 +1,2 @@
+ghostty
+ttf-cascadia-mono-nerd

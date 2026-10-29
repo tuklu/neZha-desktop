@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+# Put files on the Wayland clipboard as text/uri-list so they paste as files
+# into browsers, chat apps and file pickers.
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+
+def main() -> int:
+    if len(sys.argv) < 2:
+        print("usage: nz-copy-files <file>...", file=sys.stderr)
+        return 2
+    uris = [Path(arg).resolve().as_uri() for arg in sys.argv[1:] if os.path.exists(arg)]
+    if not uris:
+        return 1
+    payload = "\r\n".join(uris) + "\r\n"
+    subprocess.run(["wl-copy", "--type", "text/uri-list"], input=payload.encode(), check=True)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

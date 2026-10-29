@@ -1,0 +1,67 @@
+# yazi 26.9.x. Only deviations from the upstream preset (yazi-default.toml) live here.
+
+[mgr]
+ratio          = [ 1, 3, 4 ]
+sort_by        = "natural"
+sort_dir_first = true
+linemode       = "size"
+scrolloff      = 8
+
+[preview]
+# Panel is ~half of a 2x HiDPI screen; the 600x900 default looks soft.
+max_width     = 1600
+max_height    = 1800
+image_filter  = "lanczos3"
+image_quality = 85
+
+[tasks]
+# mediainfo renders large PSD/AI files; the default allocation is too small for those.
+image_alloc = 1073741824
+
+[opener]
+edit = [
+	{ run = "${EDITOR:-nvim} %s", desc = "nvim", block = true },
+	{ run = "zeditor %s",         desc = "Zed",  orphan = true },
+]
+view-image = [
+	{ run = "imv %s", desc = "imv", orphan = true },
+]
+play = [
+	{ run = "mpv --force-window %s", desc = "mpv", orphan = true },
+	{ run = "mediainfo %s1 | less", desc = "Media info", block = true },
+]
+document = [
+	{ run = "xdg-open %s1",  desc = "Default viewer", orphan = true },
+	{ run = "evince %s",     desc = "Evince",         orphan = true },
+]
+browser = [
+	{ run = "xdg-open %s1", desc = "Browser", orphan = true },
+]
+
+[open]
+prepend_rules = [
+	{ mime = "image/*",                     use = [ "view-image", "open", "reveal" ] },
+	{ mime = "{audio,video}/*",             use = [ "play", "reveal" ] },
+	{ mime = "application/pdf",             use = [ "document", "reveal" ] },
+	{ mime = "text/html",                   use = [ "browser", "edit", "reveal" ] },
+	{ mime = "application/{epub+zip,vnd.oasis.opendocument.*,vnd.openxmlformats-officedocument.*,msword,vnd.ms-*}", use = [ "document", "reveal" ] },
+]
+
+[plugin]
+prepend_fetchers = [
+	{ url = "*",  run = "git", group = "git" },
+	{ url = "*/", run = "git", group = "git" },
+]
+
+prepend_preloaders = [
+	{ mime = "{audio,video}/*", run = "mediainfo" },
+]
+
+prepend_previewers = [
+	# Rendered markdown instead of raw source.
+	{ url = "*.md",             run = 'piper -- CLICOLOR_FORCE=1 glow -w=$w -s=dark "$1"' },
+	# Codec, bitrate, duration and a thumbnail.
+	{ mime = "{audio,video}/*", run = "mediainfo" },
+	# Hex dump for opaque binaries (the preset only prints `file` output).
+	{ mime = "application/{octet-stream,x-executable,x-sharedlib,x-pie-executable,x-object}", run = 'piper -- hexyl --border=none --terminal-width=$w "$1"' },
+]

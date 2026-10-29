@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+direction="${1:-up}"
+device=""
+for candidate in /sys/class/leds/*kbd_backlight*; do
+    [[ -e $candidate ]] && device="$(basename "$candidate")" && break
+done
+[[ -z $device ]] && exit 0
+
+if [[ $direction == "off" ]]; then
+    brightnessctl -sd "$device" set 0 >/dev/null; exit 0
+elif [[ $direction == "restore" ]]; then
+    brightnessctl -rd "$device" >/dev/null; exit 0
+fi
+
+current=$(brightnessctl -d "$device" get)
+# The EC changes the backlight itself on Fn keypress; only brightness_hw_changed reflects that.
+# It reads ENODATA until the first hardware change since boot, so keep the plain value then.
+if [[ $direction == "show" ]]; then
+    hw=$(cat "/sys/class/leds/$device/brightness_hw_changed" 2>/dev/null || true)
+    [[ -n $hw ]] && current=$hw
+fi
+levels=(0 5 10)
+level_index=0
+for index in "${!levels[@]}"; do
+    if [[ $current -eq ${levels[$index]} ]]; then
+        level_index=$index
+        break
+    fi
+done
+
+if [[ $direction == "show" ]]; then
+    new=$current
+elif [[ $direction == "cycle" ]]; then
+    level_index=$(( (level_index + 1) % ${#levels[@]} ))
+    new=${levels[$level_index]}
+elif [[ $direction == "up" ]]; then
+    (( level_index < ${#levels[@]} - 1 )) && level_index=$(( level_index + 1 ))
+    new=${levels[$level_index]}
+else
+    (( level_index > 0 )) && level_index=$(( level_index - 1 ))
+    new=${levels[$level_index]}
+fi
+
+if [[ $direction != "show" ]]; then
+    brightnessctl -d "$device" set "$new" >/dev/null
+fi
+
+for index in "${!levels[@]}"; do
+    [[ $new -eq ${levels[$index]} ]] && level_index=$index && break
+done
+
+case $level_index in
+    0) label='Off';  icon=off ;;
+    1) label='Low';  icon=low ;;
+    2) label='High'; icon=high ;;
+esac
+
+# The icon carries the state; the label is right-aligned to a fixed width so it never jumps.
+osd --custom-icon "nezha-kbd-backlight-$icon-symbolic" \
+    --custom-segmented-progress "${level_index}:2" \
+    --custom-progress-text "$(printf '%4s' "$label")"

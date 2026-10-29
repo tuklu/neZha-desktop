@@ -1,0 +1,164 @@
+# neZha theme for yazi 26.9.x. Keys follow the upstream preset (theme-dark.toml);
+# anything omitted falls back to it, so every visible surface is set here.
+#
+# Palette
+#   bg #262626   surface #404040   muted #606060   subtle #8a8a8a   fg #e6e6e6
+#   red #e65c5c (accent)   green #66cc66   yellow #ffcc66   blue #6699ff
+#   magenta #cc66cc   cyan #66cccc
+#
+# Rule of thumb: the hovered row is a neutral surface, never the accent colour,
+# so search matches and file colours stay readable on top of it.
+
+[app]
+overall = {}
+
+[mgr]
+cwd = { fg = "#66cccc" }
+
+find_keyword  = { fg = "#ffcc66", bold = true, underline = true }
+find_position = { fg = "#cc66cc", bg = "reset", bold = true, italic = true }
+
+symlink_target = { fg = "#8a8a8a", italic = true }
+
+marker_copied   = { fg = "#66cc66", bg = "#66cc66" }
+marker_cut      = { fg = "#e65c5c", bg = "#e65c5c" }
+marker_marked   = { fg = "#66cccc", bg = "#66cccc" }
+marker_selected = { fg = "#ffcc66", bg = "#ffcc66" }
+marker_symbol   = "│"
+
+count_copied   = { fg = "#262626", bg = "#66cc66", bold = true }
+count_cut      = { fg = "#262626", bg = "#e65c5c", bold = true }
+count_selected = { fg = "#262626", bg = "#ffcc66", bold = true }
+
+border_symbol = "│"
+border_style  = { fg = "#404040" }
+
+[tabs]
+active    = { fg = "#262626", bg = "#e65c5c", bold = true }
+inactive  = { fg = "#e6e6e6", bg = "#404040" }
+sep_inner = { open = "", close = "" }
+sep_outer = { open = "", close = "" }
+
+[mode]
+normal_main = { fg = "#262626", bg = "#e65c5c", bold = true }
+normal_alt  = { fg = "#e6e6e6", bg = "#404040" }
+select_main = { fg = "#262626", bg = "#ffcc66", bold = true }
+select_alt  = { fg = "#e6e6e6", bg = "#404040" }
+unset_main  = { fg = "#262626", bg = "#cc66cc", bold = true }
+unset_alt   = { fg = "#e6e6e6", bg = "#404040" }
+
+[indicator]
+parent  = { fg = "#e6e6e6", bg = "#333333" }
+current = { fg = "#ffffff", bg = "#404040", bold = true }
+preview = { underline = true }
+padding = { open = "", close = "" }
+
+[status]
+overall   = { fg = "#e6e6e6" }
+sep_left  = { open = "", close = "" }
+sep_right = { open = "", close = "" }
+
+perm_sep   = { fg = "#606060" }
+perm_type  = { fg = "#6699ff" }
+perm_read  = { fg = "#ffcc66" }
+perm_write = { fg = "#e65c5c" }
+perm_exec  = { fg = "#66cc66" }
+
+progress_label  = { fg = "#e6e6e6", bold = true }
+progress_normal = { fg = "#66cc66", bg = "#404040" }
+progress_error  = { fg = "#e65c5c", bg = "#404040" }
+
+[which]
+border          = { fg = "#e65c5c" }
+cols            = 3
+mask            = { bg = "#262626" }
+cand            = { fg = "#66cccc", bold = true }
+rest            = { fg = "#606060" }
+desc            = { fg = "#e6e6e6" }
+separator       = "  "
+separator_style = { fg = "#606060" }
+
+[confirm]
+border     = { fg = "#e65c5c" }
+title      = { fg = "#e65c5c", bold = true }
+body       = { fg = "#e6e6e6" }
+list       = { fg = "#8a8a8a" }
+btn_yes    = { fg = "#262626", bg = "#e65c5c", bold = true }
+btn_no     = { fg = "#e6e6e6", bg = "#404040" }
+btn_labels = [ "  [Y]es  ", "  (N)o  " ]
+
+[spot]
+border   = { fg = "#e65c5c" }
+title    = { fg = "#e65c5c", bold = true }
+tbl_col  = { fg = "#6699ff" }
+tbl_cell = { fg = "#262626", bg = "#ffcc66" }
+
+[notify]
+title_info  = { fg = "#66cc66", bold = true }
+title_warn  = { fg = "#ffcc66", bold = true }
+title_error = { fg = "#e65c5c", bold = true }
+icon_info  = ""
+icon_warn  = ""
+icon_error = ""
+
+[pick]
+border   = { fg = "#e65c5c" }
+active   = { fg = "#ffffff", bg = "#404040", bold = true }
+inactive = { fg = "#e6e6e6" }
+
+[input]
+border   = { fg = "#e65c5c" }
+title    = { fg = "#e65c5c", bold = true }
+value    = { fg = "#ffffff" }
+selected = { fg = "#262626", bg = "#ffcc66" }
+
+[cmp]
+border   = { fg = "#404040" }
+active   = { fg = "#ffffff", bg = "#404040", bold = true }
+inactive = { fg = "#8a8a8a" }
+icon_file    = ""
+icon_folder  = ""
+icon_command = ""
+
+[tasks]
+border  = { fg = "#e65c5c" }
+title   = { fg = "#e65c5c", bold = true }
+hovered = { fg = "#ffffff", bg = "#404040", bold = true }
+
+[help]
+border  = { fg = "#e65c5c" }
+chord   = { fg = "#66cccc" }
+action  = { fg = "#e6e6e6" }
+hovered = { fg = "#ffffff", bg = "#404040", bold = true }
+
+[filetype]
+rules = [
+	# Image
+	{ mime = "**/image/*", fg = "#ffcc66" },
+	# Media
+	{ mime = "**/{audio,video}/*", fg = "#cc66cc" },
+	# Archive
+	{ mime = "**/application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "#e65c5c" },
+	# Document
+	{ mime = "**/application/{pdf,doc,rtf}", fg = "#66cccc" },
+	# Virtual file system
+	{ mime = "vfs/{absent,stale}", fg = "#606060" },
+	# Special file
+	{ url = "*", is = "orphan", fg = "#e65c5c", italic = true },
+	{ url = "*", is = "exec", fg = "#66cc66" },
+	# Dummy file
+	{ url = "*", is = "dummy", fg = "#e65c5c", italic = true },
+	{ url = "*/", is = "dummy", fg = "#e65c5c", italic = true },
+	# Fallback
+	{ url = "*/", fg = "#6699ff", bold = true },
+]
+
+# git.yazi linemode signs
+[git]
+unstaged  = { fg = "#ffcc66" }
+staged    = { fg = "#66cc66" }
+added     = { fg = "#66cc66" }
+untracked = { fg = "#8a8a8a" }
+ignored   = { fg = "#606060" }
+deleted   = { fg = "#e65c5c", bold = true }
+updated   = { fg = "#66cccc" }

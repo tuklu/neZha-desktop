@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+pidof hyprlock >/dev/null 2>&1 && exit 0
+
+pkill -f 'class=org\.nezha\.screensaver' 2>/dev/null || true
+
+# The layout has to be right before the lock takes the keyboard, otherwise the
+# first characters of the password go through whatever map was active.
+hyprctl switchxkblayout all 0 >/dev/null 2>&1 || true
+
+(
+    # --immediate-render paints the background without waiting on every
+    # resource, --no-fade-in means the first frame is the finished lock screen.
+    hyprlock --immediate-render --no-fade-in
+    hyprctl dispatch dpms on >/dev/null 2>&1 || true
+    brightness-kbd restore 2>/dev/null || true
+) &
+
+# Do not return until the compositor confirms the session is locked. hypridle
+# holds a sleep inhibitor for exactly as long as before_sleep_cmd runs, so
+# returning early is what let the machine suspend with the desktop still on
+# screen and then reveal it again on resume. Capped below logind's inhibitor
+# delay, since blocking past that only means logind suspends anyway.
+for _ in $(seq 60); do
+    if [[ $(hyprctl locked 2>/dev/null) == true ]]; then break; fi
+    sleep 0.05
+done
+
+pgrep -x "1password" >/dev/null 2>&1 && 1password --lock &
+
+(
+    sleep 3
+    pidof hyprlock >/dev/null 2>&1 || exit 0
+    brightness-kbd off
+    brightness off
+) &

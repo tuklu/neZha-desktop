@@ -1,0 +1,35 @@
+hypr          : ~/.config/hypr
+waybar        : ~/.config/waybar
+autostart     : ~/.config/autostart
+swayosd       : ~/.config/swayosd
+uwsm          : ~/.config/uwsm
+wireplumber   : ~/.config/wireplumber
+fontconfig    : ~/.config/fontconfig
+imv           : ~/.config/imv
+wiremix       : ~/.config/wiremix
+environment.d : ~/.config/environment.d
+fcitx5        : ~/.config/fcitx5
+neZha         : ~/.config/neZha
+bin           : ~/.local/share/neZha/bin
+
+# Per file: systemd writes its own .wants symlinks into that directory.
+systemd-user/battery-monitor.service         : ~/.config/systemd/user/battery-monitor.service
+systemd-user/battery-monitor.timer           : ~/.config/systemd/user/battery-monitor.timer
+systemd-user/swayosd-server.service          : ~/.config/systemd/user/swayosd-server.service
+systemd-user/nezha-kbd-backlight-osd.service : ~/.config/systemd/user/nezha-kbd-backlight-osd.service
+
+# Custom icons, resolved through the hicolor fallback of any icon theme.
+neZha/icons/nezha-touchpad-disabled-symbolic.svg : ~/.local/share/icons/hicolor/scalable/status/nezha-touchpad-disabled-symbolic.svg
+neZha/icons/nezha-kbd-backlight-off-symbolic.svg : ~/.local/share/icons/hicolor/scalable/status/nezha-kbd-backlight-off-symbolic.svg
+neZha/icons/nezha-kbd-backlight-low-symbolic.svg : ~/.local/share/icons/hicolor/scalable/status/nezha-kbd-backlight-low-symbolic.svg
+neZha/icons/nezha-kbd-backlight-high-symbolic.svg : ~/.local/share/icons/hicolor/scalable/status/nezha-kbd-backlight-high-symbolic.svg
+
+# Single files that live directly in ~/.config.
+browser-flags/chromium-flags.conf         : ~/.config/chromium-flags.conf
+browser-flags/brave-flags.conf            : ~/.config/brave-flags.conf
+browser-flags/brave-origin-beta-flags.conf : ~/.config/brave-origin-beta-flags.conf
+xdg/mimeapps.list                         : ~/.config/mimeapps.list
+xdg/xdg-terminals.list                    : ~/.config/xdg-terminals.list
+
+# Was linked by hand before; now part of the install.
+../../themes/current/mako.ini : ~/.config/mako/config

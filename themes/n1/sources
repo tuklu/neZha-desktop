@@ -1,0 +1,3 @@
+# name  git-url  pinned-commit
+# Fetched by install.sh into ~/.local/share/nezha/sources/<name>.
+hyprlock  https://github.com/tuklu/neZha-Hyprlock-Theme.git  b0bdb24ea61035d9f8038e864ba908c5c39087e2

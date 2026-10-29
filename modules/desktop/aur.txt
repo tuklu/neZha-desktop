@@ -1,0 +1,2 @@
+hyprmoncfg
+terminaltexteffects-git

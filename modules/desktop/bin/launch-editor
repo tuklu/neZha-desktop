@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+EDITOR="${EDITOR:-nvim}"
+case "$EDITOR" in
+    nvim|vim|nano|micro|hx|helix|fresh)
+        exec launch-tui "$EDITOR" "$@" ;;
+    *)
+        exec setsid uwsm-app -- "$EDITOR" "$@" ;;
+esac

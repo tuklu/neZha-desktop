@@ -1,0 +1,2 @@
+# os  path. git reads ~/.gitconfig after the XDG config, so it would override it.
+any ~/.gitconfig

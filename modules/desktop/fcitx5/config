@@ -1,0 +1,6 @@
+[Hotkey]
+# Trigger Keys
+TriggerKeys=Mod4+Alt+period
+
+# Cycle through all languages
+SwitchKey=Control+Shift

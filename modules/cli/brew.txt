@@ -1,0 +1,9 @@
+btop
+fastfetch
+yazi
+sevenzip
+media-info
+ffmpegthumbnailer
+poppler
+imagemagick
+jq

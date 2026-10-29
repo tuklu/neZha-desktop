@@ -1,0 +1,30 @@
+/* nZlauncher GTK theme - edit freely */
+window.nz {
+  background: rgba(24, 24, 32, 0.94);
+  border-radius: 16px;
+}
+.nz-entry {
+  font-size: 17px;
+  margin: 14px 14px 6px 14px;
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+.nz-list {
+  background: transparent;
+  margin: 0 8px 10px 8px;
+}
+.nz-list row {
+  padding: 7px 12px;
+  border-radius: 10px;
+  margin: 1px 4px;
+}
+.nz-list row:selected {
+  background: alpha(@accent_bg_color, 0.85);
+}
+.nz-name {
+  font-size: 14px;
+}
+.nz-badge {
+  font-size: 11px;
+  opacity: 0.55;
+}

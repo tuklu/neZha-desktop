@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# reminder <minutes> [message] | prompt | show | clear
+# systemd-run --on-active timers + notify-send; nothing persists across reboot.
+
+format_remaining() {
+    local seconds=$1 minutes=$((seconds / 60)) remainder=$((seconds % 60))
+    if ((minutes > 0 && remainder > 0)); then echo "${minutes}m ${remainder}s"
+    elif ((minutes > 0)); then echo "${minutes}m"
+    else echo "${remainder}s"; fi
+}
+
+reminder_dir="${XDG_RUNTIME_DIR:-/tmp}/nz-reminders"
+
+show_reminders() {
+    local timer next remaining reminder body="" now=$(date +%s)
+    while IFS=$'\t' read -r timer next; do
+        [[ -z $timer || -z $next ]] && continue
+        next=$((next / 1000000))
+        ((next <= now)) && continue
+        remaining=$((next - now))
+        reminder=${timer%.timer}
+        local message=""
+        [[ -f $reminder_dir/${timer%.timer}.message ]] && message=$(<"$reminder_dir/${timer%.timer}.message")
+        [[ -z $message ]] && message="Reminder"
+        body+="$message in $(format_remaining $remaining) ($(date -d "@$next" +%-H:%M))"$'\n'
+    done < <(systemctl --user list-timers --all --output=json "nz-reminder-*.timer" 2>/dev/null | jq -r '.[] | [.unit, .next] | @tsv')
+
+    if [[ -z $body ]]; then
+        notify-send "Upcoming reminders" "No outstanding reminders"
+    else
+        notify-send "Upcoming reminders" "${body%$'\n'}"
+    fi
+}
+
+clear_reminders() {
+    local units
+    units=$(systemctl --user list-timers --all --no-legend --no-pager "nz-reminder-*.timer" 2>/dev/null | awk '{ print $(NF - 1), $NF }')
+    [[ -n $units ]] && xargs -r systemctl --user stop <<<"$units" || true
+    rm -f "$reminder_dir"/nz-reminder-*.message 2>/dev/null || true
+    notify-send "All reminders have been cleared"
+}
+
+case ${1:-} in
+show | list) show_reminders; exit 0 ;;
+clear) clear_reminders; exit 0 ;;
+prompt)
+    input=$(echo "" | nz pick -i -p "Remind in: <minutes> [message]") || exit 0
+    [[ -z $input ]] && exit 0
+    exec "$0" $input
+    ;;
+esac
+
+minutes=${1:-}
+shift || true
+message="$*"
+custom_message="$message"
+
+if [[ -z $minutes || ! $minutes =~ ^[0-9]+$ ]] || ((minutes == 0)); then
+    echo "Usage: reminder <minutes> [message] | prompt | show | clear"
+    exit 1
+fi
+
+[[ -z $message ]] && message="Your ${minutes} minutes are up"
+
+set_at=$(date +%s)
+remind_at=$(date -d "+${minutes} minutes" +%H:%M)
+unit="nz-reminder-${minutes}m-$set_at"
+message_file="$reminder_dir/$unit.message"
+confirmation_title="Reminder set for ${minutes} minutes"
+
+mkdir -p "$reminder_dir"
+if [[ -n $custom_message ]]; then
+    printf "%s" "$custom_message" >"$message_file"
+    confirmation_title="$custom_message in ${minutes} minutes"
+fi
+
+systemd-run --user --quiet --collect --on-active="${minutes}m" --unit="$unit" \
+    bash -c 'notify-send -u critical "Reminder" "$1"; rm -f "$2"' bash "$message" "$message_file"
+
+notify-send "$confirmation_title" "You'll be reminded at $remind_at"

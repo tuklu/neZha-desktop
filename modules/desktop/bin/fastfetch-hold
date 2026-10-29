@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+fastfetch
+read -n1 -s

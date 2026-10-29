@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+bat=$(upower -e 2>/dev/null | grep BAT | head -n1)
+[[ -z $bat ]] && echo "No battery" && exit 0
+info=$(upower -i "$bat")
+
+pct=$(awk '/percentage/  {print int($2); exit}' <<< "$info")
+rate=$(awk '/energy-rate/ {r=sprintf("%.1f",$2); sub(/\.0$/,"",r); print r; exit}' <<< "$info")
+state=$(awk '/state/       {print $2; exit}' <<< "$info")
+cap=$(awk  '/energy-full:/ {printf "%d", $2; exit}' <<< "$info")
+remain=$(awk '/time to (empty|full)/ {
+    v=$4; u=$5
+    if (u ~ /^minute/) { printf "%dm", int(v) }
+    else {
+        h=int(v); m=int((v-h)*60)
+        m>0 ? printf "%dh %dm",h,m : printf "%dh",h
+    }; exit
+}' <<< "$info")
+
+if [[ $state == "charging" ]]; then
+    echo "Battery ${pct}%  ·  ${remain} to full  ·   ${rate}W / ${cap}Wh"
+else
+    echo "Battery ${pct}%  ·  ${remain} left  ·   ${rate}W / ${cap}Wh"
+fi

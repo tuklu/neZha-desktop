@@ -1,0 +1,6 @@
+[Unit]
+Description=neZha low battery warning
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/share/neZha/bin/battery-monitor

@@ -1,0 +1,2 @@
+# os  path. Ghostty on macOS also reads this file; only the XDG config should apply.
+macos ~/Library/Application Support/com.mitchellh.ghostty/config

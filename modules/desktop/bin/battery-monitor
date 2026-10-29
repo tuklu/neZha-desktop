@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run by systemd timer; warns once per discharge cycle when battery is low.
+THRESHOLD=10
+FLAG="/run/user/$UID/nz_battery_notified"
+
+bat=$(upower -e 2>/dev/null | grep BAT | head -n1)
+[[ -z $bat ]] && exit 0
+info=$(upower -i "$bat")
+level=$(awk '/percentage/ {print int($2); exit}' <<<"$info")
+state=$(awk '/state/ {print $2; exit}' <<<"$info")
+
+if [[ $state == "discharging" ]] && ((level <= THRESHOLD)); then
+    if [[ ! -f $FLAG ]]; then
+        notify-send -u critical -i battery-caution -t 30000 \
+            "Time to recharge" "Battery is down to ${level}%"
+        touch "$FLAG"
+    fi
+else
+    rm -f "$FLAG"
+fi
