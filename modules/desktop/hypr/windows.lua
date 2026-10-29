@@ -46,7 +46,7 @@ hl.window_rule({ match = { class = "^org\\.nezha\\.screensaver$" }, opacity    =
 -- ── nZlauncher ────────────────────────────────────────────────────────────────
 hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, float   = true       })
 hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, center  = true       })
-hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, size    = "720 420"  })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, size    = "900 500"  })
 hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, opacity = "0.97 0.97" })
 hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.pick$" }, float   = true        })
 hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.pick$" }, center  = true        })
