@@ -383,12 +383,14 @@ fi
 
 ask_git_identity
 
-# Relative symlinks inside the repo break silently when files move.
+# Tracked relative symlinks break silently when files move.
 if [[ $mode == check ]]; then
     while IFS= read -r link; do
         printf 'BROKEN SYMLINK   %s -> %s\n' "${link#$REPO/}" "$(readlink "$link")"
         status=1
-    done < <(find "$REPO/modules" "$REPO/themes" -type l ! -exec test -e {} \; -print 2>/dev/null)
+    done < <(git -C "$REPO" ls-files -s -- modules themes 2>/dev/null \
+                 | awk '$1 == "120000" {print $4}' \
+                 | while IFS= read -r rel; do [[ -e $REPO/$rel ]] || echo "$REPO/$rel"; done)
 fi
 
 if [[ $mode == link && $status == 0 ]]; then

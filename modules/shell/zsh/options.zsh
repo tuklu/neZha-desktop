@@ -3,11 +3,14 @@ HISTSIZE=50000
 SAVEHIST=50000
 [[ -d ${HISTFILE:h} ]] || mkdir -p ${HISTFILE:h}
 
-# One-time move from the old location. The symlink keeps shells that are
-# still running with the old HISTFILE writing into the same file.
-if [[ ! -e $HISTFILE && -f ~/.zsh_history && ! -L ~/.zsh_history ]]; then
-  mv ~/.zsh_history $HISTFILE && ln -s $HISTFILE ~/.zsh_history
-fi
+# Fold history from the old locations (Linux default, previous macOS setup) into
+# this one. The symlink keeps shells still running with the old HISTFILE
+# writing into the same file.
+for old_history in ~/.zsh_history ${XDG_CONFIG_HOME:-$HOME/.config}/zsh/history; do
+  [[ -f $old_history && ! -L $old_history ]] || continue
+  cat $old_history >> $HISTFILE && rm $old_history && ln -s $HISTFILE $old_history
+done
+unset old_history
 
 setopt SHARE_HISTORY
 setopt HIST_IGNORE_ALL_DUPS

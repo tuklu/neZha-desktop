@@ -31,3 +31,6 @@ modules/desktop/hyprmoncfg/display-fallbacks.json
 
 # Working notes and AI memories stay local, never tracked
 docs/
+
+# Old macOS HISTFILE location, now a symlink into ~/.local/state
+modules/shell/zsh/history
