@@ -47,11 +47,14 @@ hl.window_rule({ match = { class = "^org\\.nezha\\.screensaver$" }, opacity    =
 hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, float   = true       })
 hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, center  = true       })
 hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, size    = "900 500"  })
-hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, opacity = "0.97 0.97" })
+-- solid: the default tag and active_opacity would multiply into it
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, tag     = "-default-opacity" })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, opacity = "1 override 1 override" })
 hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.pick$" }, float   = true        })
 hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.pick$" }, center  = true        })
 hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.pick$" }, size    = "620 360"   })
-hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.pick$" }, opacity = "0.97 0.97" })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.pick$" }, tag     = "-default-opacity" })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.pick$" }, opacity = "1 override 1 override" })
 -- GTK face in window mode (gtk_mode = "window"); overlay mode is a layer surface
 hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher$" }, float  = true      })
 hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher$" }, center = true      })
