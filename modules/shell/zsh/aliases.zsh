@@ -46,3 +46,6 @@ alias g='git'
 alias gcm='git commit -m'
 alias gcam='git commit -a -m'
 alias gcad='git commit -a --amend'
+
+# nzlauncher is the binary; nz is only a shell shorthand (binds never see aliases)
+(( $+commands[nzlauncher] )) && alias nz=nzlauncher

@@ -7,8 +7,6 @@ themes/*/backgrounds/
 themes/*/screenshots/
 themes/*/preview.png
 
-# Compiled artefact, built from the nZlauncher repo
-modules/desktop/bin/nz
 
 # Runtime state, not configuration
 themes/current

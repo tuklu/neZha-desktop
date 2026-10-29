@@ -44,18 +44,18 @@ hl.window_rule({ match = { class = "^org\\.nezha\\.screensaver$" }, fullscreen =
 hl.window_rule({ match = { class = "^org\\.nezha\\.screensaver$" }, opacity    = "1 1"              })
 
 -- ── nZlauncher ────────────────────────────────────────────────────────────────
-hl.window_rule({ match = { class = "^nz\\.launcher$" }, float   = true       })
-hl.window_rule({ match = { class = "^nz\\.launcher$" }, center  = true       })
-hl.window_rule({ match = { class = "^nz\\.launcher$" }, size    = "720 420"  })
-hl.window_rule({ match = { class = "^nz\\.launcher$" }, opacity = "0.97 0.97" })
-hl.window_rule({ match = { class = "^nz\\.pick$" }, float   = true        })
-hl.window_rule({ match = { class = "^nz\\.pick$" }, center  = true        })
-hl.window_rule({ match = { class = "^nz\\.pick$" }, size    = "620 360"   })
-hl.window_rule({ match = { class = "^nz\\.pick$" }, opacity = "0.97 0.97" })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, float   = true       })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, center  = true       })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, size    = "720 420"  })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.tui$" }, opacity = "0.97 0.97" })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.pick$" }, float   = true        })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.pick$" }, center  = true        })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.pick$" }, size    = "620 360"   })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher\\.pick$" }, opacity = "0.97 0.97" })
 -- GTK face in window mode (gtk_mode = "window"); overlay mode is a layer surface
-hl.window_rule({ match = { class = "^dev\\.tuklu\\.nz$" }, float  = true      })
-hl.window_rule({ match = { class = "^dev\\.tuklu\\.nz$" }, center = true      })
-hl.window_rule({ match = { class = "^dev\\.tuklu\\.nz$" }, size   = "760 500" })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher$" }, float  = true      })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher$" }, center = true      })
+hl.window_rule({ match = { class = "^dev\\.tuklu\\.nzlauncher$" }, size   = "760 500" })
 
 -- ── Terminals ─────────────────────────────────────────────────────────────────
 hl.window_rule({ match = { class = "(kitty|com.mitchellh.ghostty|foot)" }, tag = "+terminal"        })
@@ -111,5 +111,5 @@ hl.window_rule({ match = { tag = "noidle" }, idle_inhibit = "always" })
 
 -- ── Layer rules ───────────────────────────────────────────────────────────────
 hl.layer_rule({ match = { namespace = "selection" }, no_anim = true })
-hl.layer_rule({ match = { namespace = "^(notifications|swayosd|waybar|nz-bar)$" }, blur         = true })
-hl.layer_rule({ match = { namespace = "^(notifications|swayosd|waybar|nz-bar)$" }, ignore_alpha = 0.1  })
+hl.layer_rule({ match = { namespace = "^(notifications|swayosd|waybar|nzlauncher)$" }, blur         = true })
+hl.layer_rule({ match = { namespace = "^(notifications|swayosd|waybar|nzlauncher)$" }, ignore_alpha = 0.1  })

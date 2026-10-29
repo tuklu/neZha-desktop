@@ -124,7 +124,7 @@
     "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
     "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
     "interval": 5,
-    "on-click": "nz bar \"power \"",
+    "on-click": "nzlauncher bar \"power \"",
     "on-click-right": "notify-send -u low \"$(battery-status)\"",
     "states": {
       "warning": 20,

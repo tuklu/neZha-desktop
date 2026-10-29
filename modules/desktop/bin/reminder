@@ -46,7 +46,7 @@ case ${1:-} in
 show | list) show_reminders; exit 0 ;;
 clear) clear_reminders; exit 0 ;;
 prompt)
-    input=$(echo "" | nz pick -i -p "Remind in: <minutes> [message]") || exit 0
+    input=$(echo "" | nzlauncher pick -i -p "Remind in: <minutes> [message]") || exit 0
     [[ -z $input ]] && exit 0
     exec "$0" $input
     ;;

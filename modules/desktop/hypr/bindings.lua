@@ -41,7 +41,7 @@ end
 hl.bind("SUPER + C",      clipboard_send("CTRL",  "Insert"))
 hl.bind("SUPER + V",      clipboard_send("SHIFT", "Insert"))
 hl.bind("SUPER + X",      clipboard_send("CTRL",  "X"))
-hl.bind("SUPER + CTRL + V", hl.dsp.exec_cmd('nz bar "clip "'), { desc = "Clipboard manager" })
+hl.bind("SUPER + CTRL + V", hl.dsp.exec_cmd('nzlauncher bar "clip "'), { desc = "Clipboard manager" })
 
 -- ── Window management ─────────────────────────────────────────────────────────
 hl.bind("SUPER + J", hl.dsp.layout("togglesplit"))
@@ -140,12 +140,12 @@ hl.bind("SUPER + ALT + code:61", function() actions.cycle_monitor_scale(true) en
 hl.bind("CTRL + ALT + DELETE", function() actions.close_all_windows() end)
 
 -- ── System / utilities ────────────────────────────────────────────────────────
-hl.bind("SUPER + SPACE",            hl.dsp.exec_cmd("nz bar"),                          { desc = "nZlauncher"         })
-hl.bind("SUPER + CTRL + E",         hl.dsp.exec_cmd('nz bar "emoji "'),                 { desc = "Emoji picker"        })
-hl.bind("SUPER + CTRL + C",         hl.dsp.exec_cmd('nz bar "capture "'),             { desc = "Capture menu"        })
-hl.bind("SUPER + ESCAPE",           hl.dsp.exec_cmd('nz bar "power "'),               { desc = "Power menu"          })
-hl.bind("XF86PowerOff",             hl.dsp.exec_cmd('nz bar "power "'),               { locked = true, desc = "Power menu" })
-hl.bind("SUPER + K",                hl.dsp.exec_cmd('nz bar "keys "'),                { desc = "Show key bindings"   })
+hl.bind("SUPER + SPACE",            hl.dsp.exec_cmd("nzlauncher bar"),                          { desc = "nZlauncher"         })
+hl.bind("SUPER + CTRL + E",         hl.dsp.exec_cmd('nzlauncher bar "emoji "'),                 { desc = "Emoji picker"        })
+hl.bind("SUPER + CTRL + C",         hl.dsp.exec_cmd('nzlauncher bar "capture "'),             { desc = "Capture menu"        })
+hl.bind("SUPER + ESCAPE",           hl.dsp.exec_cmd('nzlauncher bar "power "'),               { desc = "Power menu"          })
+hl.bind("XF86PowerOff",             hl.dsp.exec_cmd('nzlauncher bar "power "'),               { locked = true, desc = "Power menu" })
+hl.bind("SUPER + K",                hl.dsp.exec_cmd('nzlauncher bar "keys "'),                { desc = "Show key bindings"   })
 hl.bind("XF86Calculator",           hl.dsp.exec_cmd("gnome-calculator"),                { desc = "Calculator"          })
 
 hl.bind("SUPER + SHIFT + SPACE",        function() actions.toggle_waybar() end,         { desc = "Toggle top bar"              })
@@ -170,9 +170,9 @@ hl.bind("ALT + PRINT",       hl.dsp.exec_cmd("screenrecord --audio"),           
 hl.bind("SUPER + PRINT",     hl.dsp.exec_cmd("pkill hyprpicker || hyprpicker -a"),     { desc = "Color picker"                })
 hl.bind("SUPER + CTRL + PRINT", hl.dsp.exec_cmd("ocr"),                               { desc = "Extract text (OCR)"          })
 
-hl.bind("SUPER + CTRL + PERIOD", hl.dsp.exec_cmd('nz bar "transcode "'),                { desc = "Transcode"  })
+hl.bind("SUPER + CTRL + PERIOD", hl.dsp.exec_cmd('nzlauncher bar "transcode "'),                { desc = "Transcode"  })
 
-hl.bind("SUPER + CTRL + R",          hl.dsp.exec_cmd('nz bar "remind "'),            { desc = "Set reminder"     })
+hl.bind("SUPER + CTRL + R",          hl.dsp.exec_cmd('nzlauncher bar "remind "'),            { desc = "Set reminder"     })
 hl.bind("SUPER + CTRL + ALT + R",    hl.dsp.exec_cmd("reminder show"),                 { desc = "Show reminders"   })
 hl.bind("SUPER + SHIFT + CTRL + R",  hl.dsp.exec_cmd("reminder clear"),                { desc = "Clear reminders"  })
 

@@ -3,12 +3,12 @@ set -euo pipefail
 
 # transcode [--path path] [input] [format] [resolution]
 # Pictures: jpg/png at high/medium/low - Videos: mp4/gif at 4k/1080p/720p
-# Missing args are picked interactively via nz pick.
+# Missing args are picked interactively via nzlauncher pick.
 
 menu_select() {
     local prompt="$1"
     shift
-    printf '%s\n' "$@" | nz pick -p "$prompt"
+    printf '%s\n' "$@" | nzlauncher pick -p "$prompt"
 }
 
 pick_file() {
@@ -20,7 +20,7 @@ pick_file() {
            -o -iname '*.heic' -o -iname '*.avif' -o -iname '*.mp4' -o -iname '*.mov' -o -iname '*.m4v' \
            -o -iname '*.mkv' -o -iname '*.webm' -o -iname '*.avi' \) -printf '%T@\t%p\n' 2>/dev/null |
         sort -rn | cut -f2 | head -40 |
-        nz pick -p "Transcode"
+        nzlauncher pick -p "Transcode"
 }
 
 media_type() {
