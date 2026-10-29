@@ -115,6 +115,14 @@ hl.config({
     animations = {
         enabled = true,
     },
+
+    render = {
+        -- Fullscreen HDR video (Chrome, mpv) would switch the display to HDR;
+        -- on this 8-bit SDR panel that only washes the picture out, and it is
+        -- suspected in two silent crashes on 2026-10-30. A real HDR monitor
+        -- can turn it back on in the host-local config.
+        cm_auto_hdr = 0,
+    },
 })
 
 -- Bezier curves
